@@ -1,22 +1,24 @@
-document.getElementById("myForm").addEventListener("submit", function(event) {
-    event.preventDefault(); // フォームの送信を抑止
-  
-    // フォームから入力値を取得
-    var inputValue = document.getElementById("inputField").value;
-  
-    // 入力値を引数としてfind_links関数を呼び出す
-    var links = find_links(inputValue);
-  
-    // 結果を表示するdivをクリア
-    document.getElementById("results").innerHTML = "";
-  
-    // リンクのリストを作成
-    for (var i = 0; i < links.length; i++) {
-      var link = links[i];
-      var a = document.createElement("a");
-      a.href = link;
-      a.textContent = link;
-      document.getElementById("results").appendChild(a);
-    }
+document.querySelector('form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    var url = document.querySelector('#url').value;
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function() {
+      var links = [];
+      var parser = new DOMParser();
+      var html = parser.parseFromString(xhr.responseText, 'text/html');
+      var elements = html.querySelectorAll('a');
+      for (var i = 0; i < elements.length; i++) {
+        links.push(elements[i].href);
+      }
+      var list = document.createElement('ul');
+      for (var i = 0; i < links.length; i++) {
+        var item = document.createElement('li');
+        item.textContent = links[i];
+        list.appendChild(item);
+      }
+      document.body.appendChild(list);
+    };
+    xhr.open('GET', url);
+    xhr.send();
   });
   
